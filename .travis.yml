@@ -1,0 +1,46 @@
+branches:
+    only:
+    - develop
+    - master
+    - staging
+    - trying
+    - /^release\/.*$/ # release branches
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/ # version tags
+
+env:
+  global:
+    - JULIA_DEBUG="all"
+git:
+  depth: 99999999
+jobs:
+  include:
+    -
+      name: runtests-compiled-modules-no
+      script: "./ci/travis/runtests.sh \"no\""
+    -
+      name: runtests-compiled-modules-yes
+      script: "./ci/travis/runtests.sh \"yes\""
+    -
+      name: "dry run [,) GitHub"
+      script: "./ci/travis/script.sh \"GITHUB\" \"[,)\" \"FORCE_DRY_RUN\""
+    -
+      name: "[,) GitHub"
+      script: "./ci/travis/script.sh \"GITHUB\" \"[,)\""
+    -
+      name: "[,) GitLab"
+      script: "./ci/travis/script.sh \"GITLAB\" \"[,)\""
+    -
+      name: "[,) Bitbucket"
+      script: "./ci/travis/script.sh \"BITBUCKET\" \"[,)\""
+
+julia:
+  - "1.1"
+language: julia
+matrix:
+  fast_finish: true
+notifications:
+  email:
+    on_failure: always
+    on_success: never
+os:
+  - linux
